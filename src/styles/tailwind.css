@@ -8,6 +8,16 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  position: relative;
 }
 
 /* Account for fixed navbar when scrolling to sections */
@@ -30,6 +40,7 @@ html {
 body {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  overflow-x: hidden;
 }
 
 /* Prevent text selection on buttons during tap */
@@ -39,9 +50,42 @@ button {
   user-select: none;
 }
 
+/* Prevent horizontal overflow globally */
+* {
+  max-width: 100%;
+}
+
+img, video, iframe {
+  max-width: 100%;
+  height: auto;
+}
+
 /* Better scrolling on mobile */
 @media (max-width: 768px) {
   * {
     -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Ensure minimum touch target sizes */
+  button, a, input, select, textarea {
+    min-height: 44px;
+  }
+  
+  /* Improve form field readability on mobile */
+  input, select, textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  /* Better spacing for mobile */
+  section {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Prevent horizontal scroll on mobile */
+  html, body {
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
   }
 }

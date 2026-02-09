@@ -10,6 +10,7 @@ import { Process } from "./components/Process";
 import { Testimonials } from "./components/Testimonials";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
+import { FloatingContactButton } from "./components/FloatingContactButton";
 import { trackPageView } from "../utils/analytics";
 
 export default function App() {
@@ -27,10 +28,14 @@ export default function App() {
       {isLoading && <Preloader onComplete={() => setIsLoading(false)} />}
       
       {!isLoading && (
-        <div className="min-h-screen">
+        <div className="min-h-screen w-full overflow-x-hidden">
           <ScrollProgress />
           <Navbar />
+          <FloatingContactButton />
           <Hero />
+          <div id="portfolio">
+            <Portfolio />
+          </div>
           <div id="about">
             <StorySection />
           </div>
@@ -39,9 +44,6 @@ export default function App() {
           </div>
           <div id="services">
             <Services />
-          </div>
-          <div id="portfolio">
-            <Portfolio />
           </div>
           <Testimonials />
           <div id="contact">

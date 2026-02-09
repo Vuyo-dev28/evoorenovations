@@ -4,6 +4,10 @@ import { useRef, useState } from "react";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { trackFormSubmit, trackContact } from "../../utils/analytics";
 
+// CaptureMyForm Public Key - Replace with your actual public key from CaptureMyForm
+const CAPTUREMYFORM_PUBLIC_KEY = import.meta.env.VITE_CAPTUREMYFORM_PUBLIC_KEY || "cf1e31c6-1381-4447-90d2-9a7113e28a27";
+const CAPTUREMYFORM_ENDPOINT = "https://api.capturemyform.com/submit";
+
 export function Contact() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
@@ -11,40 +15,55 @@ export function Contact() {
     name: "",
     email: "",
     phone: "",
+    subject: "",
     message: "",
+    honeypot: "", // Spam protection field
   });
+
+  const subjectOptions = [
+    "General Inquiry",
+    "Interior Renovation",
+    "Exterior Renovation",
+    "Kitchen Renovation",
+    "Bathroom Renovation",
+    "Full Home Renovation",
+    "Consultation Request",
+    "Quote Request",
+    "Other",
+  ];
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus("idle");
-
-    try {
-      // Simulate API call - replace with actual API endpoint
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Here you would typically send the data to your backend
-      console.log("Form submitted:", formData);
-      
-      setSubmitStatus("success");
-      trackFormSubmit("contact_form");
-      setFormData({ name: "", email: "", phone: "", message: "" });
-      
-      // Reset success message after 3 seconds
-      setTimeout(() => setSubmitStatus("idle"), 3000);
-    } catch (error) {
-      setSubmitStatus("error");
-      setTimeout(() => setSubmitStatus("idle"), 3000);
-    } finally {
-      setIsSubmitting(false);
+  const handleSubmit = (e: React.FormEvent) => {
+    // Honeypot spam protection - if filled, it's a bot
+    if (formData.honeypot) {
+      e.preventDefault();
+      return; // Silently reject spam
     }
+    
+    // Check if public key is set
+    if (CAPTUREMYFORM_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
+      e.preventDefault();
+      console.error("CaptureMyForm public key not set!");
+      setSubmitStatus("error");
+      setTimeout(() => setSubmitStatus("idle"), 5000);
+      return;
+    }
+    
+    // Let the form submit naturally to avoid CORS issues
+    // The form will POST directly to CaptureMyForm API
+    // This bypasses CORS restrictions since HTML form submissions are not subject to CORS
+    trackFormSubmit("contact_form");
+    setIsSubmitting(true);
+    
+    // Don't prevent default - let the form submit naturally
+    // The form's action and method attributes will handle the submission
+    // Note: This will cause a page reload, but it avoids CORS issues
   };
 
   return (
@@ -112,7 +131,29 @@ export function Contact() {
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
             className="border border-neutral-200 bg-neutral-50 p-6 sm:p-8 lg:p-12"
           >
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            <form 
+              action="https://api.capturemyform.com/submit" 
+              method="POST" 
+              onSubmit={handleSubmit} 
+              className="space-y-4 sm:space-y-6"
+            >
+              {/* Hidden Public Key for CaptureMyForm */}
+              <input type="hidden" name="public_key" value={CAPTUREMYFORM_PUBLIC_KEY} />
+              
+              {/* Optional: Form ID for better organization */}
+              {/* <input type="hidden" name="form_id" value="EVOO_RENOVATIONS_CONTACT" /> */}
+              
+              {/* Honeypot Spam Protection (hidden from users) */}
+              <input
+                type="text"
+                name="honeypot"
+                value={formData.honeypot}
+                onChange={(e) => setFormData(prev => ({ ...prev, honeypot: e.target.value }))}
+                style={{ display: "none" }}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+              
               {["name", "email", "phone"].map((field, index) => (
                 <motion.div
                   key={field}
@@ -124,37 +165,65 @@ export function Contact() {
                     htmlFor={field}
                     className="mb-2 block text-sm uppercase tracking-wider text-neutral-700"
                   >
-                    {field.charAt(0).toUpperCase() + field.slice(1)}
+                    {field.charAt(0).toUpperCase() + field.slice(1)} <span className="text-red-500">*</span>
                   </label>
                   <motion.input
                     type={field === "email" ? "email" : field === "phone" ? "tel" : "text"}
                     id={field}
+                    name={field}
                     value={formData[field as keyof typeof formData]}
                     onChange={handleInputChange}
                     required
                     whileFocus={{ scale: 1.01 }}
                     transition={{ duration: 0.2 }}
-                    className="w-full border border-neutral-300 bg-white px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base transition-all duration-300 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                    className="w-full border border-neutral-300 bg-white px-3 sm:px-4 py-3 sm:py-3.5 text-base sm:text-base transition-all duration-300 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900 min-h-[44px]"
                   />
                 </motion.div>
               ))}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                transition={{ duration: 0.6, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <label htmlFor="subject" className="mb-2 block text-sm uppercase tracking-wider text-neutral-700">
+                  Subject <span className="text-red-500">*</span>
+                </label>
+                <motion.select
+                  id="subject"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleInputChange}
+                  required
+                  whileFocus={{ scale: 1.01 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-full border border-neutral-300 bg-white px-3 sm:px-4 py-3 sm:py-3.5 text-base sm:text-base transition-all duration-300 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900 min-h-[44px]"
+                >
+                  <option value="">Select a subject...</option>
+                  {subjectOptions.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </motion.select>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 transition={{ duration: 0.6, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
               >
                 <label htmlFor="message" className="mb-2 block text-sm uppercase tracking-wider text-neutral-700">
-                  Message
+                  Message <span className="text-red-500">*</span>
                 </label>
                 <motion.textarea
                   id="message"
+                  name="message"
                   rows={5}
                   value={formData.message}
                   onChange={handleInputChange}
                   required
                   whileFocus={{ scale: 1.01 }}
                   transition={{ duration: 0.2 }}
-                  className="w-full border border-neutral-300 bg-white px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base transition-all duration-300 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900 resize-none"
+                  className="w-full border border-neutral-300 bg-white px-3 sm:px-4 py-3 sm:py-3.5 text-base sm:text-base transition-all duration-300 focus:border-neutral-900 focus:outline-none focus:ring-1 focus:ring-neutral-900 resize-none min-h-[120px]"
                 />
               </motion.div>
               {submitStatus === "success" && (
@@ -172,7 +241,7 @@ export function Contact() {
                   animate={{ opacity: 1, y: 0 }}
                   className="rounded bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800"
                 >
-                  Something went wrong. Please try again.
+                  Something went wrong. Please check your connection and try again. If the problem persists, please contact us directly at evoorenovations@gmail.com
                 </motion.div>
               )}
               <motion.button
@@ -183,7 +252,7 @@ export function Contact() {
                 transition={{ duration: 0.6, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
                 whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-                className="w-full border-2 border-black bg-black px-6 sm:px-8 py-3 sm:py-4 text-xs sm:text-sm uppercase tracking-widest text-white transition-all duration-500 hover:bg-transparent hover:text-black disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full border-2 border-black bg-black px-6 sm:px-8 py-4 sm:py-4 text-sm sm:text-sm uppercase tracking-widest text-white transition-all duration-500 hover:bg-transparent hover:text-black disabled:opacity-50 disabled:cursor-not-allowed min-h-[50px] touch-manipulation"
               >
                 {isSubmitting ? "Sending..." : "Send Inquiry"}
               </motion.button>

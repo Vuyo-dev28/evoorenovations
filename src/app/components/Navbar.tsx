@@ -16,11 +16,27 @@ export function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
+      // Close mobile menu on scroll
+      if (isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isMobileMenuOpen]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
 
   const scrollToSection = (sectionId: string) => {
     setIsMobileMenuOpen(false);
@@ -48,7 +64,7 @@ export function Navbar() {
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       style={{ backgroundColor }}
       className={`fixed top-0 z-50 w-full transition-all duration-500 ${
-        isScrolled ? "text-black shadow-lg backdrop-blur-md" : "text-white"
+        isScrolled ? "text-black shadow-lg backdrop-blur-md bg-white/95" : "text-white"
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-4 sm:py-6">
@@ -116,7 +132,9 @@ export function Navbar() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden"
+          className="md:hidden min-w-[44px] min-h-[44px] flex items-center justify-center touch-manipulation"
+          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isMobileMenuOpen}
         >
           {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </motion.button>
@@ -132,8 +150,8 @@ export function Navbar() {
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         className="overflow-hidden md:hidden"
       >
-        <div className="border-t border-current/20 px-4 py-4">
-          <div className="flex flex-col gap-3">
+        <div className={`border-t ${isScrolled ? 'border-black/20 bg-white/95 backdrop-blur-md' : 'border-white/20 bg-black/50 backdrop-blur-md'} px-4 py-6`}>
+          <div className="flex flex-col gap-2">
             {[
               { label: "Portfolio", id: "portfolio" },
               { label: "Services", id: "services" },
@@ -143,17 +161,20 @@ export function Navbar() {
               <motion.button
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
-                whileHover={{ x: 8 }}
-                className="text-left text-sm uppercase tracking-wider transition-opacity hover:opacity-60"
+                whileTap={{ scale: 0.98 }}
+                className={`text-left py-3 px-2 text-base uppercase tracking-wider transition-all min-h-[44px] flex items-center ${
+                  isScrolled 
+                    ? 'text-black hover:bg-black/5 active:bg-black/10' 
+                    : 'text-white hover:bg-white/10 active:bg-white/20'
+                }`}
               >
                 {item.label}
               </motion.button>
             ))}
             <motion.button
               onClick={() => scrollToSection('contact')}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="mt-2 border border-current px-6 py-2.5 text-left text-sm uppercase tracking-wider transition-all"
+              whileTap={{ scale: 0.95 }}
+              className={`mt-2 border-2 ${isScrolled ? 'border-black text-black hover:bg-black hover:text-white' : 'border-white text-white hover:bg-white hover:text-black'} px-6 py-3.5 text-base uppercase tracking-wider transition-all min-h-[50px] flex items-center justify-center font-medium`}
             >
               Contact
             </motion.button>
