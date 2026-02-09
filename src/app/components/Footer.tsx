@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { Instagram, Facebook, Linkedin } from "lucide-react";
+import { trackNavigation, trackContact } from "../../utils/analytics";
 
 export function Footer() {
   return (
@@ -15,7 +16,7 @@ export function Footer() {
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               className="mb-4 sm:mb-6 text-lg sm:text-xl md:text-2xl tracking-[0.2em]"
             >
-              GM'S RENOVATION
+              EVOO RENOVATIONS
             </motion.div>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -24,7 +25,7 @@ export function Footer() {
               transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
               className="mb-6 text-sm sm:text-base text-white/70"
             >
-              Crafting exceptional spaces that embody sophistication, elegance, and timeless design since 2010.
+              EVOO Renovations - Your trusted renovation company in Gauteng, South Africa. Specializing in interior and exterior home renovations, kitchen remodeling, bathroom design, and luxury finishes. Transform your space with professional renovation services.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -79,6 +80,7 @@ export function Footer() {
                 >
                   <button
                     onClick={() => {
+                      trackNavigation(link.id);
                       const section = document.getElementById(link.id);
                       section?.scrollIntoView({ behavior: 'smooth' });
                     }}
@@ -100,10 +102,9 @@ export function Footer() {
           >
             <div className="mb-6 text-sm uppercase tracking-wider text-white/50">Contact</div>
             <ul className="space-y-2 sm:space-y-3 text-sm sm:text-base text-white/70">
-              <li>123 Design Avenue</li>
-              <li>New York, NY 10001</li>
-              <li className="mt-4"><a href="tel:+15551234567" className="hover:text-white transition-colors">+1 (555) 123-4567</a></li>
-              <li><a href="mailto:hello@gmsrenovation.com" className="hover:text-white transition-colors break-words">hello@gmsrenovation.com</a></li>
+              <li>Gauteng, South Africa</li>
+              <li className="mt-4"><a href="tel:+15551234567" onClick={() => trackContact("phone")} className="hover:text-white transition-colors">+27 78 601 1888</a></li>
+              <li><a href="mailto:evoorenovations@gmail.com" onClick={() => trackContact("email")} className="hover:text-white transition-colors break-words">evoorenovations@gmail.com</a></li>
             </ul>
           </motion.div>
         </div>
@@ -115,7 +116,7 @@ export function Footer() {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="mt-12 sm:mt-16 border-t border-white/10 pt-6 sm:pt-8 text-center text-xs sm:text-sm text-white/50"
         >
-          © 2026 GM'S RENOVATION. All rights reserved.
+          © 2026 EVOO RENOVATIONS. All rights reserved.
         </motion.div>
       </div>
     </footer>

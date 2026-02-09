@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform } from "motion/react";
 import { ChevronDown } from "lucide-react";
 import { useRef } from "react";
+import { trackButtonClick } from "../../utils/analytics";
 
 export function Hero() {
   const ref = useRef(null);
@@ -19,7 +20,7 @@ export function Hero() {
       <motion.div style={{ scale }} className="absolute inset-0">
         <img
           src="/pictures/banner.png"
-          alt="Luxury Interior"
+          alt="EVOO Renovations - Professional Interior and Exterior Home Renovation Services in Gauteng, South Africa"
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
@@ -54,7 +55,7 @@ export function Hero() {
           transition={{ duration: 1.2, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="mb-8 sm:mb-12 max-w-2xl text-base sm:text-lg text-white/80 md:text-xl px-4"
         >
-          Where luxury meets functionality. We specialize in Interior and Exterior Renovations that reflect your unique vision and elevate your lifestyle.
+          Professional renovation services in Gauteng, South Africa. Specializing in interior and exterior home renovations, kitchen remodeling, bathroom design, and luxury finishes. Transform your space with EVOO Renovations.
         </motion.p>
 
         <motion.button
@@ -64,6 +65,7 @@ export function Hero() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => {
+            trackButtonClick("Start Your Journey", "Hero");
             const contactSection = document.getElementById('contact');
             contactSection?.scrollIntoView({ behavior: 'smooth' });
           }}

@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { useInView } from "motion/react";
 import { useRef, useState } from "react";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { trackFormSubmit, trackContact } from "../../utils/analytics";
 
 export function Contact() {
   const ref = useRef(null);
@@ -33,6 +34,7 @@ export function Contact() {
       console.log("Form submitted:", formData);
       
       setSubmitStatus("success");
+      trackFormSubmit("contact_form");
       setFormData({ name: "", email: "", phone: "", message: "" });
       
       // Reset success message after 3 seconds
@@ -65,7 +67,7 @@ export function Contact() {
               {[
                 { icon: MapPin, label: "Office", value: "Gauteng, South Africa", link: null },
                 { icon: Phone, label: "Phone", value: "+27 67 844 3526", link: "tel:+27 67 844 3526" },
-                { icon: Mail, label: "Email", value: "hello@gmsrenovation.com", link: "mailto:hello@gmsrenovation.com" },
+                { icon: Mail, label: "Email", value: "evoorenovations@gmail.com", link: "mailto:evoorenovations@gmail.com" },
               ].map((item, index) => (
                 <motion.div
                   key={item.label}
@@ -86,6 +88,10 @@ export function Contact() {
                     {item.link ? (
                       <a
                         href={item.link}
+                        onClick={() => {
+                          if (item.label === "Phone") trackContact("phone");
+                          if (item.label === "Email") trackContact("email");
+                        }}
                         className="text-sm sm:text-base md:text-lg transition-colors hover:text-neutral-900 break-words"
                       >
                         {item.value}

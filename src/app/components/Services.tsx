@@ -7,22 +7,22 @@ const services = [
   {
     icon: Home,
     title: "Full Home Renovation",
-    description: "Complete transformation of your living spaces with meticulous attention to detail and premium materials.",
+    description: "Complete home renovation services in Gauteng. Transform your entire house with expert renovation contractors and premium materials.",
   },
   {
     icon: Palette,
     title: "Interior Design",
-    description: "Bespoke design solutions that blend aesthetics with functionality, tailored to your lifestyle.",
+    description: "Professional interior design and renovation services. Custom interior renovation solutions tailored to your home and lifestyle.",
   },
   {
     icon: Ruler,
     title: "Space Planning",
-    description: "Strategic layout optimization to maximize both beauty and utility in every square foot.",
+    description: "Expert space planning for home renovations. Optimize your layout to maximize functionality and aesthetic appeal in every room.",
   },
   {
     icon: Sparkles,
     title: "Luxury Finishes",
-    description: "Exquisite materials and finishes sourced globally to create truly unique environments.",
+    description: "Premium luxury finishes and materials for your renovation project. High-end finishes that elevate your home renovation in Gauteng.",
   },
 ];
 
@@ -82,14 +82,14 @@ export function Services() {
             className="mx-auto mb-6 h-px w-24 bg-neutral-400"
           />
           <div className="mb-4 text-xs sm:text-sm uppercase tracking-[0.3em] text-neutral-500">Our Expertise</div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl">Comprehensive Design Services</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl">Comprehensive Renovation Services</h2>
           <motion.p
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ duration: 1, delay: 0.3 }}
             className="mx-auto mt-4 sm:mt-6 max-w-2xl text-sm sm:text-base md:text-lg text-neutral-600 px-4"
           >
-            Each service is a chapter in your transformation story
+            From full home renovations to kitchen and bathroom remodeling, we provide expert renovation services throughout Gauteng, South Africa
           </motion.p>
         </motion.div>
 

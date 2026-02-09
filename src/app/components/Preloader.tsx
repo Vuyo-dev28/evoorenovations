@@ -41,7 +41,7 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
         transition={{ duration: 0.8, delay: 0.2 }}
         className="mb-12 text-center"
       >
-        <div className="mb-6 text-3xl tracking-[0.3em] text-white md:text-4xl">GM'S RENOVATION</div>
+        <div className="mb-6 text-3xl tracking-[0.3em] text-white md:text-4xl">EVOO RENOVATIONS</div>
         <div className="text-sm uppercase tracking-[0.4em] text-white/50">Premium Design Experience</div>
       </motion.div>
 

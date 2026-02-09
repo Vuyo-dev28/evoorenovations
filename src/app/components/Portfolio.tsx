@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform } from "motion/react";
 import { useInView } from "motion/react";
 import { useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
+import { trackPortfolioView, trackButtonClick } from "../../utils/analytics";
 
 const projects = [
   {
@@ -107,6 +108,7 @@ export function Portfolio() {
               onMouseLeave={() => setHoveredId(null)}
               onTouchStart={() => setHoveredId(project.id)}
               onClick={() => {
+                trackPortfolioView(project.title);
                 // Could open a modal or navigate to project detail page
                 // For now, we'll scroll to contact section to inquire about the project
                 const contactSection = document.getElementById('contact');
@@ -115,7 +117,7 @@ export function Portfolio() {
             >
               <motion.img
                 src={project.image}
-                alt={project.title}
+                alt={`${project.title} - ${project.category} Renovation Project by EVOO Renovations in Gauteng, South Africa`}
                 className="h-full w-full object-cover"
                 animate={{
                   scale: hoveredId === project.id ? 1.15 : 1,
@@ -177,6 +179,7 @@ export function Portfolio() {
                     whileTap={{ scale: 0.95 }}
                     onClick={(e) => {
                       e.stopPropagation();
+                      trackButtonClick("View Project", project.title);
                       // Could open a modal or navigate to project detail page
                       // For now, we'll scroll to contact section to inquire about the project
                       const contactSection = document.getElementById('contact');
@@ -203,6 +206,7 @@ export function Portfolio() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => {
+              trackButtonClick("Explore All Projects", "Portfolio");
               // Scroll to contact section to discuss more projects
               const contactSection = document.getElementById('contact');
               contactSection?.scrollIntoView({ behavior: 'smooth' });

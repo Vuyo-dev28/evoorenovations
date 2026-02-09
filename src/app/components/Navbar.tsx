@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
+import { trackNavigation, trackButtonClick } from "../../utils/analytics";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -23,6 +24,7 @@ export function Navbar() {
 
   const scrollToSection = (sectionId: string) => {
     setIsMobileMenuOpen(false);
+    trackNavigation(sectionId);
     
     // Small delay to ensure mobile menu animation completes
     const delay = isMobileMenuOpen ? 300 : 0;
@@ -52,12 +54,15 @@ export function Navbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-4 sm:py-6">
         {/* Logo */}
         <motion.button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          onClick={() => {
+            trackButtonClick("Logo", "Navbar");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
           className="text-sm sm:text-lg md:text-xl tracking-[0.2em]"
         >
-GM'S RENOVATION
+          EVOO RENOVATIONS
         </motion.button>
 
         {/* Desktop Navigation */}
